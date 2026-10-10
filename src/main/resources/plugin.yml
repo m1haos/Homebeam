@@ -1,0 +1,45 @@
+name: Homebeam
+version: '${version}'
+main: com.mdevstudio.homebeam.Homebeam
+api-version: '${apiVersion}'
+author: M/Dev Studio
+description: Homes marked with light pillars that only their owners and friends can see
+
+permissions:
+  homebeam.use:
+    description: Every player command
+    default: true
+    children:
+      homebeam.command.tp: true
+      homebeam.command.set: true
+      homebeam.command.delete: true
+      homebeam.command.rename: true
+      homebeam.command.color: true
+      homebeam.command.list: true
+      homebeam.command.invite: true
+      homebeam.command.uninvite: true
+      homebeam.command.show: true
+      homebeam.command.hide: true
+      homebeam.command.help: true
+      homebeam.death-mark: true
+  homebeam.admin:
+    description: Full access to Homebeam
+    default: op
+    children:
+      homebeam.use: true
+      homebeam.command.reload: true
+      homebeam.limit.unlimited: true
+  homebeam.death-mark:
+    description: Get a pillar over the place of death
+    default: true
+  homebeam.limit.unlimited:
+    description: No cap on the number of homes
+    default: false
+  homebeam.bypass.warmup:
+    description: Teleport without warmup. Not part of homebeam.admin, so admins see the effect too
+    default: false
+  homebeam.bypass.cooldown:
+    description: Teleport without cooldown
+    default: false
+  homebeam.command.reload:
+    default: op

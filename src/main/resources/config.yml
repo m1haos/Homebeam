@@ -1,0 +1,129 @@
+config-version: 1
+
+# Message language: ru or en. Texts are in plugins/Homebeam/lang/ and can be edited freely.
+language: ru
+
+# Every system can be switched off.
+modules:
+  # Light pillars over homes. Off: homes still work as plain teleport points.
+  beams: true
+  # Name and distance floating near each pillar.
+  labels: true
+  # Homes farther than beams.anchor-distance are shown on the horizon in their direction.
+  horizon: true
+  # /home <name> teleports. Off: homes are only markers on the map of the world.
+  teleport: true
+  # /home invite: friends see your pillar and can travel to it.
+  sharing: true
+  # A pillar over the place where the player died, until they come back or it expires.
+  death-mark: true
+
+# Command aliases. The main command is always /homebeam. Changes here need a server restart:
+# Paper builds the command tree once, at startup.
+commands:
+  aliases: [home, homes, hb]
+  subcommands:
+    tp: [go, warp]
+    set: [add, create, sethome]
+    delete: [del, remove, rm]
+    rename: [mv]
+    color: [colour, paint]
+    list: [ls]
+    invite: [share, trust]
+    uninvite: [unshare, untrust]
+    show: ["on"]
+    hide: ["off"]
+    reload: [rl]
+    help: ["?", h]
+
+homes:
+  # Homes per player without a homebeam.limit.<number> permission. homebeam.limit.unlimited removes the cap.
+  default-limit: 3
+  # Longest home name, in characters. Names may use any letters, digits, spaces, but not ':'.
+  max-name-length: 24
+  # Worlds where /home set is refused, by folder name.
+  blocked-worlds: []
+
+teleport:
+  # Seconds of standing still before the jump. 0 teleports at once.
+  warmup: 3
+  # Seconds between two teleports of the same player.
+  cooldown: 10
+  # Moving to another block or taking damage during warmup cancels the teleport.
+  cancel-on-move: true
+  cancel-on-damage: true
+  # Whether invited friends may teleport to your home or only see it.
+  guests-can-teleport: true
+
+beams:
+  # Pillar size in blocks. Width is the side of the glass prism.
+  height: 64
+  width: 0.3
+  # Prism slowly turns around its axis, degrees per second. 0 keeps it still.
+  spin: 30
+  # Width breathes by this share of itself, 0.15 = plus or minus 15 %. 0 turns it off.
+  pulse: 0.15
+  # Coloured outline that shows through terrain.
+  glow: true
+  # Ticks for a new pillar to grow out of the ground.
+  grow-ticks: 25
+  # Within this many blocks the pillar stands on the home itself. Keep it under the server's view distance
+  # in blocks and the display tracking range in spigot.yml (128 by default).
+  anchor-distance: 64
+  # Ticks between position updates. Lower is smoother and costs a little more traffic.
+  update-interval: 4
+  # Particles at the foot of the pillar, seen within this many blocks. 0 turns them off.
+  base-particles-range: 24
+  label:
+    # Blocks above the home where the label floats.
+    height: 2.6
+    # Labels grow with distance so they stay readable: scale = distance / per-blocks, between min and max.
+    per-blocks: 12
+    min-scale: 1.0
+    max-scale: 5.0
+    # Background as #AARRGGBB, alpha first. #00000000 removes it.
+    background: "#60101018"
+    # Labels show through blocks.
+    see-through: true
+
+death-mark:
+  # Seconds before the mark disappears on its own.
+  duration: 600
+  # The mark is cleared when the player comes this close, in blocks.
+  clear-radius: 4
+  # Colour id from the list below.
+  color: red
+
+# Pillar colours. The id is used in /home color; names for chat are in lang files under colors.
+# block is the block the prism is made of, rgb tints particles, glow and the label.
+# Order matters: new homes take the next colour in the list.
+colors:
+  gold: {block: YELLOW_STAINED_GLASS, rgb: "#FFC94D"}
+  aqua: {block: LIGHT_BLUE_STAINED_GLASS, rgb: "#5FE3E0"}
+  rose: {block: PINK_STAINED_GLASS, rgb: "#FF7EB6"}
+  lime: {block: LIME_STAINED_GLASS, rgb: "#8BE36A"}
+  violet: {block: PURPLE_STAINED_GLASS, rgb: "#B48CFF"}
+  white: {block: WHITE_STAINED_GLASS, rgb: "#F2F4FF"}
+  orange: {block: ORANGE_STAINED_GLASS, rgb: "#FF9A3C"}
+  red: {block: RED_STAINED_GLASS, rgb: "#FF4D4D"}
+
+# Particles. particle takes any Bukkit particle name; DUST and other coloured ones take the home colour.
+# Particles that need a block or an item (BLOCK, ITEM) are not supported here.
+effects:
+  # Spiral around the player during warmup.
+  warmup: {particle: DUST, size: 1.1, strands: 2, radius: 0.8, height: 2.2}
+  # Burst where the player disappears.
+  departure: {particle: REVERSE_PORTAL, count: 60, spread: 0.4, speed: 0.4}
+  # Column where the player appears.
+  arrival: {particle: END_ROD, count: 35, spread: 0.25, speed: 0.08}
+  # Rising sparks at the foot of a pillar.
+  beam-base: {particle: DUST, size: 0.9, count: 2}
+
+# Any sound id, resource pack ones too.
+sounds:
+  home-set: block.amethyst_block.resonate
+  warmup-tick: block.note_block.chime
+  departure: block.respawn_anchor.deplete
+  arrival: block.beacon.power_select
+  cancel: block.note_block.bass
+  death-mark-cleared: block.amethyst_block.chime
