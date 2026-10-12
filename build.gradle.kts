@@ -52,6 +52,14 @@ tasks {
             events("failed", "skipped")
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
+        // MockBukkit reports unimplemented API as a skipped test; print the call that hit it.
+        afterTest(KotlinClosure2<TestDescriptor, TestResult, Unit>({ test, result ->
+            val cause = result.exception
+            if (result.resultType == TestResult.ResultType.SKIPPED && cause != null) {
+                println("${test.name} skipped: $cause")
+                cause.stackTrace.take(12).forEach { println("    at $it") }
+            }
+        }))
     }
 
     jar {
