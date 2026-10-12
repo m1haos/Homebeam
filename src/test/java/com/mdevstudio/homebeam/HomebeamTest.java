@@ -33,6 +33,12 @@ class HomebeamTest {
         MockBukkit.unmock();
     }
 
+    private PlayerMock join(String name) {
+        PlayerMock player = new SchedulingPlayer(server, name);
+        server.addPlayer(player);
+        return player;
+    }
+
     @Test
     void createsItsFilesOnFirstStart() {
         for (String file : List.of("config.yml", "lang/ru.yml", "lang/en.yml")) {
@@ -43,7 +49,7 @@ class HomebeamTest {
 
     @Test
     void renameKeepsTheOrderOfHomes() {
-        PlayerMock player = server.addPlayer("Nika");
+        PlayerMock player = join("Nika");
         HomeBook book = plugin.homes();
         PlayerHomes own = book.of(player);
         for (String name : List.of("База", "Шахта", "Ферма")) {
@@ -59,8 +65,8 @@ class HomebeamTest {
 
     @Test
     void guestsSeeSharedHomesAndHomesSurviveReload() {
-        PlayerMock owner = server.addPlayer("Nika");
-        PlayerMock guest = server.addPlayer("Misha");
+        PlayerMock owner = join("Nika");
+        PlayerMock guest = join("Misha");
         HomeBook book = plugin.homes();
         PlayerHomes own = book.of(owner);
         Home base = Home.at(owner.getUniqueId(), "База", owner.getLocation(), "aqua")
@@ -82,7 +88,7 @@ class HomebeamTest {
 
     @Test
     void highestLimitPermissionWins() {
-        PlayerMock player = server.addPlayer("Nika");
+        PlayerMock player = join("Nika");
         assertEquals(3, Permissions.homeLimit(player, 3));
         player.addAttachment(plugin, "homebeam.limit.5", true);
         player.addAttachment(plugin, "homebeam.limit.10", true);
